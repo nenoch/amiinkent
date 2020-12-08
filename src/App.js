@@ -1,65 +1,106 @@
-import './App.css';
-import { useEffect } from 'react';
-import Geocode from 'react-geocode';
+import "./App.css";
+import { useEffect, useState } from "react";
+import Geocode from "react-geocode";
 
 const App = () => {
+  const kentZipCodes = [
+    "BR",
+    "CT",
+    "DA",
+    "ME",
+    "TN1",
+    "TN2",
+    "TN3",
+    "TN4",
+    "TN8",
+    "TN9",
+    "TN10",
+    "TN11",
+    "TN12",
+    "TN13",
+    "TN14",
+    "TN15",
+    "TN16",
+    "TN17",
+    "TN18",
+    "TN23",
+    "TN24",
+    "TN25",
+    "TN26",
+    "TN27",
+    "TN28",
+    "TN29",
+    "TN30",
+    "BR",
+  ];
+
+  const [currentZipCode, setcurrentZipCode] = useState("");
+
   useEffect(() => {
-    if ('geolocation' in navigator) {
+    const extractFromAddress = (components, type) =>
+      components
+        .filter((component) => component.types.indexOf(type) === 0)
+        .map((item) => item.long_name)
+        .pop() || null;
+
+    if ("geolocation" in navigator) {
       console.log("Available");
+
       const options = {
         enableHighAccuracy: true,
-        timeout: 5000,
-        maximumAge: 0
+        timeout: 10000,
+        maximumAge: 0,
       };
+
       const success = (position) => {
         const coordinates = position.coords;
-        console.log(`Your current position is`);
         console.log(`Latitude : ${coordinates.latitude}`);
         console.log(`Longitude: ${coordinates.longitude}`);
-        console.log(`More or less ${coordinates.accuracy} meters.`);
-        Geocode.setApiKey("AIzaSyDWY6vKML1ij6vOjma9rRWfjTqEjDPjD4U");
+        Geocode.setApiKey(process.env.REACT_APP_GOOGLE_API);
         Geocode.fromLatLng(coordinates.latitude, coordinates.longitude).then(
-          response => {
-            const address = response.results[0].formatted_address;
-            console.log(address);
+          (response) => {
+            const zipCode = extractFromAddress(
+              response.results[0].address_components,
+              "postal_code"
+            );
+            setcurrentZipCode(zipCode);
+            console.log(zipCode);
           },
-          error => {
+          (error) => {
             console.error(error);
           }
         );
-      }
-     const error = (err) => {
+      };
+
+      const error = (err) => {
         console.warn(`ERROR(${err.code}): ${err.message}`);
-      }
+      };
       navigator.geolocation.getCurrentPosition(success, error, options);
     } else {
       console.log("Not Available");
     }
-  }, [])
+  }, [setcurrentZipCode]);
 
-  const amIinKent = () => true;
-  console.log(amIinKent());
-  const response = amIinKent() ? "YES" : "NO";
+  const amIinKent = () =>
+    kentZipCodes.some((digits) => currentZipCode.indexOf(digits) !== -1);
+  console.log("amIinKent", amIinKent());
 
   return (
     <div className="App">
-      <div className="App-header">
-        {/* <img src={logo} className="App-logo" alt="logo" /> */}
-        <h1 className="App-logo">
-          {/* Edit <code>src/App.js</code> and save to reload. */}
-          {response}
-        </h1>
-        {/* <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a> */}
+      <div
+        className="body"
+        style={{
+          backgroundColor: amIinKent() ? "#b32828" : "#112c74"
+        }}
+      >
+        {amIinKent() ? (
+          <h1 className="yes">YES</h1>
+        ) : (
+          <h1 className="no">NO</h1>
+        )}
       </div>
     </div>
   );
-}
+};
 
 export default App;
