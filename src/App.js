@@ -54,8 +54,8 @@ const App = () => {
 
       const success = (position) => {
         const coordinates = position.coords;
-        console.log(`Latitude : ${coordinates.latitude}`);
-        console.log(`Longitude: ${coordinates.longitude}`);
+        // console.log(`Latitude : ${coordinates.latitude}`);
+        // console.log(`Longitude: ${coordinates.longitude}`);
         Geocode.setApiKey(process.env.REACT_APP_GOOGLE_API);
         Geocode.fromLatLng(coordinates.latitude, coordinates.longitude).then(
           (response) => {
@@ -64,7 +64,7 @@ const App = () => {
               "postal_code"
             );
             setcurrentZipCode(zipCode);
-            console.log(zipCode);
+            // console.log(zipCode);
           },
           (error) => {
             console.error(error);
@@ -83,7 +83,7 @@ const App = () => {
 
   const amIinKent = () =>
     kentZipCodes.some((digits) => currentZipCode.indexOf(digits) !== -1);
-  console.log("amIinKent", amIinKent());
+  // console.log("amIinKent", amIinKent());
 
   return (
     <div className="App">
